@@ -34,6 +34,20 @@ billManager.authorizeUser("avpmanager@gmail.com", "Alexander123", function(data)
 });
 */
 
+/*
+//Смена пароля. Передаем id пользователя, старый пароль, новый пароль
+billManager.changePassword(13, "Alexander321", "Alexander123", function(data){
+	console.log(data);
+});
+*/
+
+/*
+//Восстановление пароля
+//Первый параметр - email
+billManager.recoverPassword("avpmanager@gmail.com", function(data){
+	console.log(data);
+});
+*/
 
 /*
 //Получим: id, email, телефон, имя, временную зону пользователя
@@ -73,13 +87,6 @@ billManager.getProductsInfo([1,8], function(data) {//Сюда придет от�
 */
 
 /*
-//Смена пароля. Передаем id пользователя, старый пароль, новый пароль
-billManager.changePassword(13, "Alexander321", "Alexander123", function(data){
-	console.log(data);
-});
-*/
-
-/*
 //Пополнение баланса
 //Передаем сумму пополнение, валюту в iso, Id валюты в биллинге, id платежной системы в биллинге, callback
 //В callback придет URL на который надо перенаправить пользователя для осуществления платежа
@@ -108,3 +115,8 @@ billManager.buyProduct({
 	console.log(data);
 });
 */
+
+//Получить все платежи пользователя
+billManager.getUserPayments(function(data){
+	console.log(data);
+});

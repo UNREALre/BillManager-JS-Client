@@ -1,3 +1,8 @@
+/**
+ * BILLmanager JS client v1.0.0
+ * Copyright 2018 Alexander Podrabinovich
+ */
+
 var billManager = (function(){
 
 	var ajaxConnectionError = "Error during request to BILLmanager!";
@@ -104,6 +109,26 @@ var billManager = (function(){
 					});
 				} else {
 					callback();
+				}
+			}).fail(function(response){
+				callback({
+					error: ajaxConnectionError
+				});
+			});
+		},
+
+		recoverPassword: function(email, callback) {			
+			this.sendRequest({
+	            func: "recovery",
+	            type: "email",
+	            email: email,
+	            sok: "ok",
+	            out: "json",
+			}).done(function(response){
+				if (response.doc.error) {
+					callback({
+						error: response.doc.error.msg.$
+					});
 				}
 			}).fail(function(response){
 				callback({
@@ -486,6 +511,32 @@ var billManager = (function(){
 						}
 					});
 
+				}
+			}).fail(function(response){
+				callback({
+					error: ajaxConnectionError
+				});
+			});
+		},
+
+		getUserPayments: function(callback) {
+			if (!this.checkSession()) {
+				this.options.failToProlongSession()
+				return false;
+			}
+
+			var $this = this;
+			this.sendRequest({
+		    	"func": "payment",
+		        "auth": sessionStorage.getItem("bm_session_id"),
+	            "out": "json"
+			}).done(function(response){
+				if (response.doc.error) {
+					callback({
+						error: response.doc.error.msg.$
+					});
+				} else {
+					callback(response.doc.elem);
 				}
 			}).fail(function(response){
 				callback({
