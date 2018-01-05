@@ -43,7 +43,7 @@ billManager.registerUser(
 		partner: "",
 		lang: "ru"
 	}, 
-	function(data) {Приходит ID нового пользователя
+	function(data) {//Приходит ID нового пользователя
 		console.log(data)
 	}
 );
