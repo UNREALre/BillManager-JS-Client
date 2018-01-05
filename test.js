@@ -116,7 +116,9 @@ billManager.buyProduct({
 });
 */
 
+/*
 //Получить все платежи пользователя
 billManager.getUserPayments(function(data){
 	console.log(data);
 });
+*/
