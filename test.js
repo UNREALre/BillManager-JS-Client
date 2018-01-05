@@ -1,6 +1,6 @@
 //Инициализируем
 billManager.options = {
-	bmURL: "https://185.14.30.1:1500/billmgr",
+	bmURL: "https://site.com/billmgr",
 	sessionExpire: 30,
 	failToProlongSession: function() {
 		//будет вызвана, если сессия биллинга будет просрочена, а продлить ее не получится. тут можно описать те или иные действия
