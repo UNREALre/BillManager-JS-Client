@@ -22,6 +22,7 @@ var billManager = (function(){
 		options: {
 			bmURL: "",
 			errorContainerID: "",
+			lang: "",
 			sessionExpire: 0,
 			failToProlongSession: function(){},
 		},
@@ -33,6 +34,7 @@ var billManager = (function(){
 		    	"func": "auth",
 		        "username": login,
 		        "password": password,
+		        "lang": $this.options.lang,
 		        "out": "json"
 			}).done(function(response){
 				if (response.doc.error) {
@@ -44,7 +46,7 @@ var billManager = (function(){
 					sessionStorage.setItem("bm_session_id", response.doc.auth.$id);
 					sessionStorage.setItem("bm_session_created", Date.now());
 
-					callback();
+					callback({});
 				}
 			}).fail(function(response){
 				callback({
@@ -67,7 +69,7 @@ var billManager = (function(){
 	            "partner": reg_data.partner,
 	            "sesid": '',
 	            "sok": "ok",
-	            "lang": reg_data.lang,
+	            "lang": $this.options.lang,
 	            "out": "json",
 	            "conditions_agree" : "on",
 			}).done(function(response){
@@ -155,6 +157,52 @@ var billManager = (function(){
 			}
 		},
 
+		addUserProfile: function(profile_data, callback) {
+			if (!this.checkSession()) {
+				this.options.failToProlongSession()
+				return false;
+			}
+
+			var $this = this;
+			this.sendRequest({
+		    	"func": "profile.add.profiledata",
+		        "auth": sessionStorage.getItem("bm_session_id"),
+				"address_legal": "",
+				"address_physical": "",
+				"city_legal": "",
+				"city_physical": "",
+				"clicked_button": "finish",
+				"country": 182,
+				"country_legal": "",
+				"country_physical": 182,
+				"email": profile_data.email,
+				"maildocs": "",
+				"name": profile_data.realname,
+				"person": profile_data.realname,
+				"phone": profile_data.phone,
+				"phone_country": 182,
+				"profiletype": 1,
+				"progressid": "false",
+				"sfrom": "ajax",
+				"sok": "ok",
+		        "out": "json"
+			}).done(function(response){
+				if (response.doc.error) {
+					callback({
+						error: response.doc.error.msg.$
+					});
+				} else {
+					callback({
+						"profile_id": response.doc.id.$
+					});
+				}
+			}).fail(function(response){
+				callback({
+					error: ajaxConnectionError
+				});
+			});
+		},
+
 		//Getting basic information about user from BM
 		getUserInfo: function(callback) {
 			if (!this.checkSession()) {
@@ -179,6 +227,7 @@ var billManager = (function(){
 						"name": response.doc.user_realname.$,
 						"phone": response.doc.user_phone.$,
 						"timezone": response.doc.user_timezone.$,
+						"profile_id": response.doc.profile_id.$
 					});
 				}
 			}).fail(function(response){
@@ -495,17 +544,19 @@ var billManager = (function(){
 						"payment_currency": purchaseParams.currency_bm_id,
 						"paymethod": purchaseParams.paymethod,
 			            "randomnumber": Math.random().toString(36).substr(2, 12),
+			            "profile": purchaseParams.profile_id,
+			            "profiletype": 1,
 			            "u": "n",
 			            "sok": "ok",
 			            "out": "json",
 					}).done(function(bill_response){
-						if (response.doc.error) {
+						if (bill_response.doc.error) {
 							callback({
 								error: bill_response.doc.error.msg.$
 							});
 						} else {
 							
-							var redirect_url = bill_response.doc.ok.$, final_url = $this.options.bmURL.replace("/billmgr", "") + redirect_url + "&auth="+sessionStorage.getItem("bm_session_id");
+							var redirect_url = bill_response.doc.ok.$, final_url = $this.options.bmURL.substr(0, $this.options.bmURL.length - 1) + redirect_url + "&auth="+sessionStorage.getItem("bm_session_id");
 
 							callback(final_url);
 						}
